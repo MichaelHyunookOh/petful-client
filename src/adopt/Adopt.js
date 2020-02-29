@@ -3,34 +3,33 @@ import React from 'react'
 
 export default class Adopt extends React.Component {
   state = {
-    cat: {
-      age: 5,
-      breed: 'Tabby',
-      description: 'The furry kind.',
-      gender: 'Female',
-      image: 'https://loremflickr.com/200/200/cat',
-      name: 'Cat 1',
-      story: 'A story about the cat.'
-    },
+    loadingStatus: 'loaded',
+    cat: {},
+    dog: {}
+  }
 
-    dog: {
-      age: 2,
-      breed: 'Mutt',
-      description: 'The kind that barks.',
-      gender: 'Male',
-      image: 'https://loremflickr.com/200/200/dog',
-      name: 'Dog 1',
-      story: 'A story about the dog.'
-    },
+  componentDidMount() {
+    fetch('http://localhost:8000/pets')
+      .then(response => response.json())
+      .then(data => {
+        this.setState({
+          cat: data.cat,
+          dog: data.dog
+        })
+      })
   }
 
   render() {
-    return <div id='adopt'>
-      <section id='cats'>
+    return <div id='adopt' className={ this.state.loadingStatus }>
+      <section id='loading'>
+        <span>Loading...</span>
+      </section>
+
+      <section id='cats' className='pet-section'>
         <Pet data={ this.state.cat } />
       </section>
 
-      <section id='dogs'>
+      <section id='dogs' className='pet-section'>
         <Pet data={ this.state.dog } />
       </section>
     </div>

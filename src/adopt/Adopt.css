@@ -2,6 +2,22 @@
   display: flex;
 }
 
+#adopt.loading section#loading {
+  display: block;
+}
+
+#adopt.loading section.pet-section {
+  display: none;
+}
+
+#adopt.loaded section#loading {
+  display: none;
+}
+
+#adopt.loaded section.pet-section {
+  display: block;
+}
+
 #adopt section {
   flex: 1;
 }
