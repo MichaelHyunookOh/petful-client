@@ -30,13 +30,23 @@ export default class Adopt extends React.Component {
 
   handleSubmit = (event) => {
     event.preventDefault()
+    const newPerson = event.target['name'].value
 
+    this.addToLine(newPerson)
+
+    // Begin automatically dequeueing and displaying names.
+    this.beginAutomaticAdopting()
+
+    event.target['name'].value = ''
+  }
+
+  addToLine = (name) => {
     const config = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ name: event.target['name'].value })
+      body: JSON.stringify({ name })
     }
 
     fetch('http://localhost:8000/people', config)
@@ -44,10 +54,39 @@ export default class Adopt extends React.Component {
       .then(data => {
         this.setState({ people: data })
       })
+  }
 
-    // Begin automatically dequeueing and displaying names.
+  beginAutomaticAdopting = () => {
+    this.setState({
+      adoptionTimer: setInterval(() => {
+        this.adopt('dog', this.state.people[0])
+      }, 1000),
 
-    event.target['name'].value = ''
+      newPersonTimer: setInterval(() => {
+        this.addToLine('New Person')
+      }, 1000)
+    })
+  }
+
+  adopt = (type, person) => {
+    const config = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ type, person })
+    }
+
+    fetch('http://localhost:8000/adopt', config)
+      .then(response => response.json())
+      .then(data => {
+        this.setState({
+          cat: data.cat,
+          dog: data.dog,
+          people: data.people,
+          message: data.message
+        })
+      })
   }
 
   render() {
@@ -70,7 +109,7 @@ export default class Adopt extends React.Component {
         <p>Get in Line to Adopt</p>
 
         <form onSubmit={ this.handleSubmit }>
-          <input id='name' type='text' placeholder='Name' />
+          <input required id='name' type='text' placeholder='Name' />
           <input type='submit' />
         </form>
 
