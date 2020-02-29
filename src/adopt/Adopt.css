@@ -1,0 +1,7 @@
+#adopt {
+  display: flex;
+}
+
+#adopt section {
+  flex: 1;
+}
