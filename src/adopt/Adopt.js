@@ -1,11 +1,14 @@
 import './Adopt.css'
 import React from 'react'
 
+import Pet from './Pet'
+
 export default class Adopt extends React.Component {
   state = {
     loadingStatus: 'loaded',
     cat: {},
-    dog: {}
+    dog: {},
+    people: []
   }
 
   componentDidMount() {
@@ -17,6 +20,34 @@ export default class Adopt extends React.Component {
           dog: data.dog
         })
       })
+
+    fetch('http://localhost:8000/people')
+      .then(response => response.json())
+      .then(data => {
+        this.setState({ people: data })
+      })
+  }
+
+  handleSubmit = (event) => {
+    event.preventDefault()
+
+    const config = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name: event.target['name'].value })
+    }
+
+    fetch('http://localhost:8000/people', config)
+      .then(response => response.json())
+      .then(data => {
+        this.setState({ people: data })
+      })
+
+    // Begin automatically dequeueing and displaying names.
+
+    event.target['name'].value = ''
   }
 
   render() {
@@ -25,45 +56,32 @@ export default class Adopt extends React.Component {
         <span>Loading...</span>
       </section>
 
-      <section id='cats' className='pet-section'>
-        <Pet data={ this.state.cat } />
+      <section id='pets'>
+        <section id='cats' className='pet-section'>
+          <Pet data={ this.state.cat } />
+        </section>
+
+        <section id='dogs' className='pet-section'>
+          <Pet data={ this.state.dog } />
+        </section>
       </section>
 
-      <section id='dogs' className='pet-section'>
-        <Pet data={ this.state.dog } />
+      <section id='people'>
+        <p>Get in Line to Adopt</p>
+
+        <form onSubmit={ this.handleSubmit }>
+          <input id='name' type='text' placeholder='Name' />
+          <input type='submit' />
+        </form>
+
+        <p>Currently in line:</p>
+
+        <ul>
+          { this.state.people.map((person, index) => {
+            return <li key={ index }>{ person }</li>
+          })}
+        </ul>
       </section>
     </div>
   }
-}
-
-function Pet({ data }) {
-  return <div className='pet'>
-    <img src={ data.image } alt='Pet.' />
-    <h2>{ data.name }</h2>
-    <p>{ data.description }</p>
-
-    <table>
-      <tbody>
-        <tr>
-          <td>Age</td>
-          <td>{ data.age }</td>
-        </tr>
-
-        <tr>
-          <td>Breed</td>
-          <td>{ data.breed }</td>
-        </tr>
-
-        <tr>
-          <td>Gender</td>
-          <td>{ data.gender }</td>
-        </tr>
-
-        <tr>
-          <td>Story</td>
-          <td>{ data.story }</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
 }
