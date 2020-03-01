@@ -5,9 +5,11 @@ import Pet from './Pet'
 
 export default class Adopt extends React.Component {
   state = {
-    loadingStatus: 'loaded',
+    canAdopt: false,
     cat: {},
+    currentPerson: null,
     dog: {},
+    loadingStatus: 'loaded',
     people: []
   }
 
@@ -32,6 +34,7 @@ export default class Adopt extends React.Component {
     event.preventDefault()
     const newPerson = event.target['name'].value
 
+    this.setState({ currentPerson: newPerson })
     this.addToLine(newPerson)
 
     // Begin automatically dequeueing and displaying names.
@@ -52,7 +55,9 @@ export default class Adopt extends React.Component {
     fetch('http://localhost:8000/people', config)
       .then(response => response.json())
       .then(data => {
-        this.setState({ people: data })
+        this.setState({
+          people: data
+        })
       })
   }
 
@@ -81,11 +86,14 @@ export default class Adopt extends React.Component {
     fetch('http://localhost:8000/adopt', config)
       .then(response => response.json())
       .then(data => {
+        const canAdopt = data.people[0] === this.state.currentPerson
+
         this.setState({
+          canAdopt,
           cat: data.cat,
           dog: data.dog,
+          message: data.message,
           people: data.people,
-          message: data.message
         })
       })
   }
@@ -99,10 +107,18 @@ export default class Adopt extends React.Component {
       <section id='pets'>
         <section id='cats' className='pet-section'>
           <Pet data={ this.state.cat } />
+
+          { this.state.canAdopt &&
+            <button>Adopt Me!</button>
+          }
         </section>
 
         <section id='dogs' className='pet-section'>
           <Pet data={ this.state.dog } />
+
+          { this.state.canAdopt &&
+            <button>Adopt Me!</button>
+          }
         </section>
       </section>
 
