@@ -59,7 +59,8 @@ export default class Adopt extends React.Component {
   beginAutomaticAdopting = () => {
     this.setState({
       adoptionTimer: setInterval(() => {
-        this.adopt('dog', this.state.people[0])
+        const type = [ 'cat', 'dog' ][Math.round(Math.random())]
+        this.adopt(type, this.state.people[0])
       }, 1000),
 
       newPersonTimer: setInterval(() => {
