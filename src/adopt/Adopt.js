@@ -63,7 +63,7 @@ export default class Adopt extends React.Component {
       .then(response => response.json())
       .then(data => {
         this.setState({
-          people: data
+          people: [ ...this.state.people, data.person ]
         })
       })
   }
@@ -106,14 +106,15 @@ export default class Adopt extends React.Component {
     fetch('http://localhost:8000/adopt', config)
       .then(response => response.json())
       .then(data => {
-        const canAdopt = data.people[0] === this.state.currentPerson
+        const [ removed, ...people ] = this.state.people
+        const canAdopt = people[0] === this.state.currentPerson
 
         this.setState({
           canAdopt,
           cat: data.cat,
           dog: data.dog,
           message: data.message,
-          people: data.people,
+          people
         })
       })
   }
