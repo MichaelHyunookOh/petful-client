@@ -1,5 +1,6 @@
 import './Adopt.css'
 import React from 'react'
+import faker from 'faker'
 
 import Pet from './Pet'
 
@@ -10,7 +11,8 @@ export default class Adopt extends React.Component {
     currentPerson: null,
     dog: {},
     loadingStatus: 'loaded',
-    people: []
+    message: null,
+    people: [],
   }
 
   componentDidMount() {
@@ -62,15 +64,23 @@ export default class Adopt extends React.Component {
   }
 
   beginAutomaticAdopting = () => {
-    this.setState({
-      adoptionTimer: setInterval(() => {
-        const type = [ 'cat', 'dog' ][Math.round(Math.random())]
-        this.adopt(type, this.state.people[0])
-      }, 1000),
+    const adoptionTimer = setInterval(() => {
+      const type = [ 'cat', 'dog' ][Math.round(Math.random())]
+      this.adopt(type, this.state.people[0])
+    }, 1000)
 
-      newPersonTimer: setInterval(() => {
-        this.addToLine('New Person')
-      }, 1000)
+    const newPersonTimer = setInterval(() => {
+      this.addToLine(faker.name.findName())
+    }, 1000)
+
+    const stop = setInterval(() => {
+      if (this.state.people[0] === this.state.currentPerson) {
+        this.setState({ message: "It's your turn!" })
+
+        clearInterval(adoptionTimer)
+        clearInterval(newPersonTimer)
+        clearInterval(stop)
+      }
     })
   }
 
@@ -109,7 +119,7 @@ export default class Adopt extends React.Component {
           <Pet data={ this.state.cat } />
 
           { this.state.canAdopt &&
-            <button>Adopt Me!</button>
+            <button onClick={ () => this.adopt('cat', this.state.people[0]) }>Adopt Me!</button>
           }
         </section>
 
@@ -117,12 +127,14 @@ export default class Adopt extends React.Component {
           <Pet data={ this.state.dog } />
 
           { this.state.canAdopt &&
-            <button>Adopt Me!</button>
+            <button onClick={ () => this.adopt('dog', this.state.people[0]) }>Adopt Me!</button>
           }
         </section>
       </section>
 
       <section id='people'>
+        <p>{ this.state.message }</p>
+
         <p>Get in Line to Adopt</p>
 
         <form onSubmit={ this.handleSubmit }>
