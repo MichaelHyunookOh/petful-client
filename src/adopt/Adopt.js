@@ -91,7 +91,7 @@ export default class Adopt extends React.Component {
 
   handleAdopt = (type) => {
     this.adopt(type, this.state.currentPerson)
-    this.setState({ canAdopt: false })
+    this.setState({ canAdopt: false, currentPerson: null })
   }
 
   adopt = (type, person) => {
@@ -143,14 +143,18 @@ export default class Adopt extends React.Component {
       </section>
 
       <section id='people'>
-        <p>{ this.state.message }</p>
+        <p id='message'>{ this.state.message }</p>
 
-        <p>Get in Line to Adopt</p>
+        { !this.state.currentPerson &&
+          <div id='get-in-line'>
+            <p>Get in line to adopt a pet!</p>
 
-        <form onSubmit={ this.handleSubmit }>
-          <input required id='name' type='text' placeholder='Name' />
-          <input type='submit' />
-        </form>
+            <form onSubmit={ this.handleSubmit }>
+              <input required id='name' type='text' placeholder='Name' />
+              <input type='submit' value='Get in Line' />
+            </form>
+          </div>
+        }
 
         <p>Currently in line:</p>
 

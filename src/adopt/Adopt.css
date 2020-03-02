@@ -1,6 +1,4 @@
-#adopt {
-  display: flex;
-}
+/* Loading Behavior */
 
 #adopt.loading section#loading {
   display: block;
@@ -20,6 +18,53 @@
   display: none;
 }
 
-#adopt section {
+/* Layout */
+
+#adopt #pets {
+  display: flex;
+}
+
+#adopt #pets .pet-section {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 1rem;
+}
+
+#adopt #pets .pet-section button {
+  font-size: 2rem;
+  margin-top: 1rem;
+  padding: 0.5rem 2rem;
+}
+
+#adopt #people {
+  margin: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#adopt #people #message,
+#adopt #people #get-in-line p {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+#adopt #people form {
+  border-bottom: 1px solid black;
+  padding-bottom: 1rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+#adopt #people form input[type="text"] {
+  flex: 1;
+  padding: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+#adopt #people form input[type="submit"] {
+  font-size: 1.5rem;
 }
