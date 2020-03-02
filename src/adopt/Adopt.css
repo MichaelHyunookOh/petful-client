@@ -6,7 +6,8 @@
   display: block;
 }
 
-#adopt.loading section.pet-section {
+#adopt.loading section#pets,
+#adopt.loading section#people {
   display: none;
 }
 
@@ -14,8 +15,9 @@
   display: none;
 }
 
-#adopt.loaded section.pet-section {
-  display: block;
+#adopt.loading section#pets,
+#adopt.loading section#people {
+  display: none;
 }
 
 #adopt section {

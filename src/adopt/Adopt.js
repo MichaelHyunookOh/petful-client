@@ -6,29 +6,33 @@ import Pet from './Pet'
 
 export default class Adopt extends React.Component {
   state = {
-    canAdopt: false,
-    cat: {},
-    currentPerson: null,
-    dog: {},
-    loadingStatus: 'loaded',
+    loadingStatus: 'loading',
     message: null,
+
+    canAdopt: false,
+    currentPerson: null,
+
+    cat: {},
+    dog: {},
     people: [],
   }
 
   componentDidMount() {
-    fetch('http://localhost:8000/pets')
+    const getPets = fetch('http://localhost:8000/pets')
       .then(response => response.json())
-      .then(data => {
-        this.setState({
-          cat: data.cat,
-          dog: data.dog
-        })
-      })
 
-    fetch('http://localhost:8000/people')
+    const getPeople = fetch('http://localhost:8000/people')
       .then(response => response.json())
-      .then(data => {
-        this.setState({ people: data })
+
+    Promise.all([ getPets, getPeople ])
+      .then(([ pets, people ]) => {
+        this.setState({
+          loadingStatus: 'loaded',
+
+          cat: pets.cat,
+          dog: pets.dog,
+          people,
+        })
       })
   }
 
@@ -39,7 +43,8 @@ export default class Adopt extends React.Component {
     this.setState({ currentPerson: newPerson })
     this.addToLine(newPerson)
 
-    // Begin automatically dequeueing and displaying names.
+    // For demo purposes, start cycling the queue so that
+    // the new person gets a chance to adopt.
     this.beginAutomaticAdopting()
 
     event.target['name'].value = ''
@@ -74,14 +79,19 @@ export default class Adopt extends React.Component {
     }, 1000)
 
     const stop = setInterval(() => {
-      if (this.state.people[0] === this.state.currentPerson) {
-        this.setState({ message: "It's your turn!" })
+      if (this.state.canAdopt) {
+        this.setState({ canAdopt: true, message: "It's your turn!" })
 
         clearInterval(adoptionTimer)
         clearInterval(newPersonTimer)
         clearInterval(stop)
       }
     })
+  }
+
+  handleAdopt = (type) => {
+    this.adopt(type, this.state.currentPerson)
+    this.setState({ canAdopt: false })
   }
 
   adopt = (type, person) => {
@@ -119,7 +129,7 @@ export default class Adopt extends React.Component {
           <Pet data={ this.state.cat } />
 
           { this.state.canAdopt &&
-            <button onClick={ () => this.adopt('cat', this.state.people[0]) }>Adopt Me!</button>
+            <button onClick={ () => this.handleAdopt('cat') }>Adopt Me!</button>
           }
         </section>
 
@@ -127,7 +137,7 @@ export default class Adopt extends React.Component {
           <Pet data={ this.state.dog } />
 
           { this.state.canAdopt &&
-            <button onClick={ () => this.adopt('dog', this.state.people[0]) }>Adopt Me!</button>
+            <button onClick={ () => this.handleAdopt('dog') }>Adopt Me!</button>
           }
         </section>
       </section>
