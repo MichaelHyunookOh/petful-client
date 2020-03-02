@@ -72,11 +72,11 @@ export default class Adopt extends React.Component {
     const adoptionTimer = setInterval(() => {
       const type = [ 'cat', 'dog' ][Math.round(Math.random())]
       this.adopt(type, this.state.people[0])
-    }, 1000)
+    }, 3000)
 
     const newPersonTimer = setInterval(() => {
       this.addToLine(faker.name.findName())
-    }, 1000)
+    }, 3000)
 
     const stop = setInterval(() => {
       if (this.state.canAdopt) {
