@@ -71,19 +71,21 @@ export default class Adopt extends React.Component {
   beginAutomaticAdopting = () => {
     const adoptionTimer = setInterval(() => {
       const type = [ 'cat', 'dog' ][Math.round(Math.random())]
-      this.adopt(type, this.state.people[0])
-    }, 3000)
 
-    const newPersonTimer = setInterval(() => {
-      this.addToLine(faker.name.findName())
-    }, 3000)
+      if (this.state[type]) {
+        this.adopt(type, this.state.people[0])
+
+        // Add someone to the line to replace the person who
+        // adopted, so the queue doesn't empty out.
+        this.addToLine(faker.name.findName())
+      }
+    }, 1000)
 
     const stop = setInterval(() => {
       if (this.state.canAdopt) {
         this.setState({ canAdopt: true, message: "It's your turn!" })
 
         clearInterval(adoptionTimer)
-        clearInterval(newPersonTimer)
         clearInterval(stop)
       }
     })
@@ -127,17 +129,29 @@ export default class Adopt extends React.Component {
 
       <section id='pets'>
         <section id='cats' className='pet-section'>
-          <Pet data={ this.state.cat } />
+          { this.state.cat &&
+            <Pet data={ this.state.cat } />
+          }
 
-          { this.state.canAdopt &&
+          { !this.state.cat &&
+            <p>There are no cats left to adopt.</p>
+          }
+
+          { this.state.cat && this.state.canAdopt &&
             <button onClick={ () => this.handleAdopt('cat') }>Adopt Me!</button>
           }
         </section>
 
         <section id='dogs' className='pet-section'>
-          <Pet data={ this.state.dog } />
+          { this.state.dog &&
+            <Pet data={ this.state.dog } />
+          }
 
-          { this.state.canAdopt &&
+          { !this.state.dog &&
+            <p>There are no dogs left to adopt.</p>
+          }
+
+          { this.state.dog && this.state.canAdopt &&
             <button onClick={ () => this.handleAdopt('dog') }>Adopt Me!</button>
           }
         </section>
@@ -148,7 +162,7 @@ export default class Adopt extends React.Component {
 
         { !this.state.currentPerson &&
           <div id='get-in-line'>
-            <p>Get in line to adopt a pet!</p>
+            <p>Get in line to adopt a pet!</p> 
 
             <form onSubmit={ this.handleSubmit }>
               <input required id='name' type='text' placeholder='Name' />
