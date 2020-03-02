@@ -1,10 +1,11 @@
+import './Pet.css'
 import React from 'react'
 
 export default function({ data }) {
   return <div className='pet'>
-    <img src={ data.image } alt='Pet.' />
+    <div id='pet-image' style={{ backgroundImage: `url(${ data.imageURL })` }} />
     <h2>{ data.name }</h2>
-    <p>{ data.description }</p>
+    <p>{ data.imageDescription }</p>
 
     <table>
       <tbody>

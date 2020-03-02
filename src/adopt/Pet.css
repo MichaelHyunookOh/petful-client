@@ -1,0 +1,15 @@
+.pet {
+  width: 100%;
+}
+
+.pet #pet-image {
+  background-position: center center;
+  background-size: cover;
+  height: 250px;
+  width: 100%;
+}
+
+.pet td:first-child {
+  padding-right: 1rem;
+  font-weight: 600;
+}
