@@ -84,7 +84,7 @@ export default class Adopt extends React.Component {
 
     const stop = setInterval(() => {
       if (this.state.canAdopt) {
-        this.setState({ canAdopt: true, message: "It's your turn!" })
+        this.setState({ message: "It's your turn!" })
 
         clearInterval(adoptionTimer)
         clearInterval(stop)
