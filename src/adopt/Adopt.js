@@ -3,6 +3,7 @@ import React from 'react'
 import faker from 'faker'
 
 import Pet from './Pet'
+const API_URL = process.env.REACT_APP_API_URL
 
 export default class Adopt extends React.Component {
   state = {
@@ -18,10 +19,10 @@ export default class Adopt extends React.Component {
   }
 
   componentDidMount() {
-    const getPets = fetch('http://localhost:8000/pets')
+    const getPets = fetch(`${ API_URL }/pets`)
       .then(response => response.json())
 
-    const getPeople = fetch('http://localhost:8000/people')
+    const getPeople = fetch(`${ API_URL }/people`)
       .then(response => response.json())
 
     Promise.all([ getPets, getPeople ])
@@ -59,7 +60,7 @@ export default class Adopt extends React.Component {
       body: JSON.stringify({ name })
     }
 
-    fetch('http://localhost:8000/people', config)
+    fetch(`${ API_URL }/people`, config)
       .then(response => response.json())
       .then(data => {
         this.setState({
@@ -79,7 +80,7 @@ export default class Adopt extends React.Component {
         // adopted, so the queue doesn't empty out.
         this.addToLine(faker.name.findName())
       }
-    }, 1000)
+    }, 3000)
 
     const stop = setInterval(() => {
       if (this.state.canAdopt) {
@@ -105,7 +106,7 @@ export default class Adopt extends React.Component {
       body: JSON.stringify({ type, person })
     }
 
-    fetch('http://localhost:8000/adopt', config)
+    fetch(`${ API_URL }/adopt`, config)
       .then(response => response.json())
       .then(data => {
         const [ removed, ...people ] = this.state.people
