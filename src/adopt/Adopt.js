@@ -84,8 +84,6 @@ export default class Adopt extends React.Component {
 
     const stop = setInterval(() => {
       if (this.state.canAdopt) {
-        this.setState({ message: "It's your turn!" })
-
         clearInterval(adoptionTimer)
         clearInterval(stop)
       }
@@ -112,11 +110,15 @@ export default class Adopt extends React.Component {
         const [ removed, ...people ] = this.state.people
         const canAdopt = people[0] === this.state.currentPerson
 
+        const message = canAdopt
+          ? "It's your turn!"
+          : data.message
+
         this.setState({
           canAdopt,
           cat: data.cat,
           dog: data.dog,
-          message: data.message,
+          message,
           people
         })
       })
