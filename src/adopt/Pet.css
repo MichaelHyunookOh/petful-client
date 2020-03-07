@@ -1,3 +1,9 @@
+.pet-section button {
+  font-size: 2rem;
+  margin-top: 1rem;
+  padding: 0.5rem 2rem;
+}
+
 .pet {
   width: 100%;
 }

@@ -2,7 +2,9 @@ import './Adopt.css'
 import React from 'react'
 import faker from 'faker'
 
+import People from './People'
 import Pet from './Pet'
+
 const API_URL = process.env.REACT_APP_API_URL
 
 export default class Adopt extends React.Component {
@@ -18,6 +20,7 @@ export default class Adopt extends React.Component {
     people: [],
   }
 
+  // Load initial data.
   componentDidMount() {
     const getPets = fetch(`${ API_URL }/pets`)
       .then(response => response.json())
@@ -37,74 +40,59 @@ export default class Adopt extends React.Component {
       })
   }
 
-  handleSubmit = (event) => {
-    event.preventDefault()
-    const newPerson = event.target['name'].value
+  // ---------------------------------------------
+  // People-Related Functions
 
-    this.setState({ currentPerson: newPerson })
-    this.addToLine(newPerson)
+  handleNewPerson = (person) => {
+    this.setState({ currentPerson: person })
+    this.addToLine(person)
 
     // For demo purposes, start cycling the queue so that
     // the new person gets a chance to adopt.
     this.beginAutomaticAdopting()
-
-    event.target['name'].value = ''
   }
 
   addToLine = (name) => {
     const config = {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name })
     }
 
     fetch(`${ API_URL }/people`, config)
       .then(response => response.json())
-      .then(data => {
+      .then(() => {
         this.setState({
-          people: [ ...this.state.people, data.person ]
+          people: [ ...this.state.people, name ]
         })
       })
   }
 
-  beginAutomaticAdopting = () => {
-    const adoptionTimer = setInterval(() => {
-      const type = [ 'cat', 'dog' ][Math.round(Math.random())]
-
-      if (this.state[type]) {
-        this.adopt(type, this.state.people[0])
-
-        // Add someone to the line to replace the person who
-        // adopted, so the queue doesn't empty out.
-        this.addToLine(faker.name.findName())
-      }
-    }, 3000)
-
-    const stop = setInterval(() => {
-      if (this.state.canAdopt) {
-        clearInterval(adoptionTimer)
-        clearInterval(stop)
-      }
-    })
-  }
+  // ---------------------------------------------
+  // Adoption-Related Functions
 
   handleAdopt = (type) => {
-    this.adopt(type, this.state.currentPerson)
+    this.adopt(type)
+
+    // Since adoption happened manually, we can assume that
+    // the person who adopted was the current user.
     this.setState({ canAdopt: false, currentPerson: null })
   }
 
-  adopt = (type, person) => {
-    const config = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ type, person })
+  adopt = (type) => {
+    // Don't attempt to adopt if there are no more pets
+    // remaining.
+    if (!this.state[type]) {
+      return
     }
 
-    fetch(`${ API_URL }/adopt`, config)
+    const config = {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type })
+    }
+
+    fetch(`${ API_URL }/pets`, config)
       .then(response => response.json())
       .then(data => {
         const [ removed, ...people ] = this.state.people
@@ -124,6 +112,26 @@ export default class Adopt extends React.Component {
       })
   }
 
+  beginAutomaticAdopting = () => {
+    const adoptionTimer = setInterval(() => {
+      const type = [ 'cat', 'dog' ][Math.round(Math.random())]
+      this.adopt(type)
+
+      // Add someone to the line to replace the person who
+      // adopted, so the queue doesn't empty out.
+      this.addToLine(faker.name.findName())
+    }, 3000)
+
+    const stop = setInterval(() => {
+      if (this.state.canAdopt) {
+        clearInterval(adoptionTimer)
+        clearInterval(stop)
+      }
+    })
+  }
+
+  // ---------------------------------------------
+
   render() {
     return <div id='adopt' className={ this.state.loadingStatus }>
       <section id='loading'>
@@ -131,57 +139,26 @@ export default class Adopt extends React.Component {
       </section>
 
       <section id='pets'>
-        <section id='cats' className='pet-section'>
-          { this.state.cat &&
-            <Pet data={ this.state.cat } />
-          }
+        <Pet
+          data={ this.state.cat }
+          canAdopt={ this.state.canAdopt }
+          handleAdopt={ () => { this.adopt('cat') } }
+        />
 
-          { !this.state.cat &&
-            <p>There are no cats left to adopt.</p>
-          }
-
-          { this.state.cat && this.state.canAdopt &&
-            <button onClick={ () => this.handleAdopt('cat') }>Adopt Me!</button>
-          }
-        </section>
-
-        <section id='dogs' className='pet-section'>
-          { this.state.dog &&
-            <Pet data={ this.state.dog } />
-          }
-
-          { !this.state.dog &&
-            <p>There are no dogs left to adopt.</p>
-          }
-
-          { this.state.dog && this.state.canAdopt &&
-            <button onClick={ () => this.handleAdopt('dog') }>Adopt Me!</button>
-          }
-        </section>
+        <Pet
+          data={ this.state.dog }
+          canAdopt={ this.state.canAdopt }
+          handleAdopt={ () => { this.adopt('dog') } }
+        />
       </section>
 
-      <section id='people'>
-        <p id='message'>{ this.state.message }</p>
+      <p id='message'>{ this.state.message }</p>
 
-        { !this.state.currentPerson &&
-          <div id='get-in-line'>
-            <p>Get in line to adopt a pet!</p> 
-
-            <form onSubmit={ this.handleSubmit }>
-              <input required id='name' type='text' placeholder='Name' />
-              <input type='submit' value='Get in Line' />
-            </form>
-          </div>
-        }
-
-        <p>Currently in line:</p>
-
-        <ul>
-          { this.state.people.map((person, index) => {
-            return <li key={ index }>{ person }</li>
-          })}
-        </ul>
-      </section>
+      <People
+        currentPerson={ this.state.currentPerson }
+        handleNewPerson={ this.handleNewPerson }
+        people={ this.state.people }
+      />
     </div>
   }
 }

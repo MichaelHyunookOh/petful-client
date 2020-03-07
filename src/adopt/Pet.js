@@ -1,34 +1,46 @@
 import './Pet.css'
 import React from 'react'
 
-export default function({ data }) {
-  return <div className='pet'>
-    <div id='pet-image' style={{ backgroundImage: `url(${ data.imageURL })` }} />
-    <h2>{ data.name }</h2>
-    <p>{ data.imageDescription }</p>
+export default function({ canAdopt, handleAdopt, data }) {
+  return <section className='pet-section'>
+    { !data &&
+      <p>There are no cats left to adopt.</p>
+    }
 
-    <table>
-      <tbody>
-        <tr>
-          <td>Age</td>
-          <td>{ data.age }</td>
-        </tr>
+    { data &&
+      <div className='pet'>
+        <div id='pet-image' style={{ backgroundImage: `url(${ data.imageURL })` }} />
+        <h2>{ data.name }</h2>
+        <p>{ data.imageDescription }</p>
 
-        <tr>
-          <td>Breed</td>
-          <td>{ data.breed }</td>
-        </tr>
+        <table>
+          <tbody>
+            <tr>
+              <td>Age</td>
+              <td>{ data.age }</td>
+            </tr>
 
-        <tr>
-          <td>Gender</td>
-          <td>{ data.gender }</td>
-        </tr>
+            <tr>
+              <td>Breed</td>
+              <td>{ data.breed }</td>
+            </tr>
 
-        <tr>
-          <td>Story</td>
-          <td>{ data.story }</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+            <tr>
+              <td>Gender</td>
+              <td>{ data.gender }</td>
+            </tr>
+
+            <tr>
+              <td>Story</td>
+              <td>{ data.story }</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    }
+
+    { data && canAdopt &&
+      <button onClick={ handleAdopt }>Adopt Me!</button>
+    }
+  </section>
 }
