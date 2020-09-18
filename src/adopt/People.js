@@ -12,16 +12,16 @@ export default function({ handleNewPerson, currentPerson, people }) {
   return <section id='people'>
     { !currentPerson &&
       <div id='get-in-line'>
-        <p>Get in line to adopt a pet!</p> 
+        
 
         <form onSubmit={ handleSubmit }>
           <input required id='name' type='text' placeholder='Name' />
-          <input type='submit' value='Get in Line' />
+          <input type='submit' value='Join the Line!' />
         </form>
       </div>
     }
 
-    <p>Currently in line:</p>
+    <p>People in line</p>
 
     <ul>
       { people.map((person, index) => {
